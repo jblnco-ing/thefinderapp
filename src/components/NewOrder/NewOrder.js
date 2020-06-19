@@ -41,7 +41,6 @@ export const NewOrder = () => {
     const storeCollection = useFirestoreCollection;
     const { store } = useContext(DatabaseContext);
     const clientsColletion = store().collection('clients');
-    const [clients, setclients] = useState([]);
     const [visible, setVisible] = useState(false);
     const [client_id, setclient_id] = useState(0);
     const handleChange = value => {
@@ -61,119 +60,100 @@ export const NewOrder = () => {
         console.log('Finish:', values);
     };
 
+    const options = (clients) =>
+        clients.length ?
+            clients.map((client, index) => <Option key={index} value={index}>{client.name}</Option>)
+            : (<Option value="0">No Client</Option>)
+        ;
+
     const getClients = () => {
         const data = storeCollection(clientsColletion).docs.map((d) => ({ id: d.id, ...d.data() }));
         return data;
     }
     return (
         <div>
-            <Form.Provider
-                onFormFinish={(name, { values, forms }) => {
-                    if (name === 'newClientForm') {
-                        console.log(values);
-                        const { newOrderForm } = forms;
-                        const clients = getClients();
-                        // const clients = newOrderForm.getFieldValue('clients') || [];
-                        newOrderForm.setFieldsValue({
-                            clients: [...clients, values],
-                        });
-                        setVisible(false);
-                    }
-                }}
+            <Form
+                {...layout}
+                name="newOrderForm"
+                onFinish={onFinish}
+            >
+                <Form.Item
+                    label="Client"
                 >
-                <Form
-                    {...layout}
-                    name="newOrderForm"
-                    onFinish={onFinish}
-                >
+                <Row>
+                    <Col span={12}>
                     <Form.Item
-                        label="Client"
-                    >
-                    <Row>
-                        <Col span={12}>
-                        <Form.Item
-                            noStyle
-                            shouldUpdate={(prevValues, curValues) => prevValues.clients !== curValues.clients}
-                            rules={[
-                                {
-                                    required: true,
-                                },
-                            ]}
-                                >
-                                    {({ getFieldValue }) => {
-                                        console.log(getFieldValue);
-                                        const clients = getFieldValue('clients') || [];
-                                        const options = (clients) => 
-                                            clients.length ?
-                                                clients.map((client, index) => <Option key={index} value={index}>{client.name}</Option>)
-                                                : (<Option value="0">No Client</Option>)
-                                        ;
-                                        // console.log(options(client));
-                                        
-                                    return (
-                                        <Select
-                                            onChange={handleChange}
-                                        >
-                                            {options(clients)}
-                                        </Select>
-                                    );
+                        noStyle
+                                shouldUpdate={(prevValues, curValues) => {
+                                    console.log(prevValues);
+                                    return prevValues.clients !== curValues.clients
                                 }}
-                            </Form.Item>
-                            </Col>
-                            <Col>
-                                <Button
-                                    htmlType="button"
-                                    style={{
-                                        margin: '0 8px',
-                                    }}
-                                    onClick={showUserModal}
-                                    >
-                                    Add Client
-                                </Button>
-                            </Col>
-                        </Row>
-                    </Form.Item>
-                    <Form.Item
-                        name="name"
-                        label="Product Name"
                         rules={[
                             {
                                 required: true,
                             },
                         ]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        name="description"
-                        label="Product Description"
-                        rules={[
-                            {
-                                required: true,
-                            },
-                        ]}
-                    >
-                        <Input.TextArea />
-                    </Form.Item>
-                    <Form.Item
-                        name="cost"
-                        label="Cost"
-                        rules={[
-                            {
-                                required: true,
-                            },
-                        ]}
-                    >
-                        <InputNumber />
-                    </Form.Item>
-                    <Form.Item {...tailLayout}>
-                        <Button htmlType="submit" type="primary">
-                            Submit
-                        </Button> 
-                    </Form.Item>
-                </Form>
-                <MNewClient visible={visible} onCancel={hideUserModal} useResetFormOnCloseModal={useResetFormOnCloseModal} />
-            </Form.Provider>
+                            >
+                            <Select
+                                onChange={handleChange}
+                            >
+                                {options(getClients())}
+                            </Select>
+                        </Form.Item>
+                        </Col>
+                        <Col>
+                            <Button
+                                htmlType="button"
+                                style={{
+                                    margin: '0 8px',
+                                }}
+                                onClick={showUserModal}
+                                >
+                                Add Client
+                            </Button>
+                        </Col>
+                    </Row>
+                </Form.Item>
+                <Form.Item
+                    name="name"
+                    label="Product Name"
+                    rules={[
+                        {
+                            required: true,
+                        },
+                    ]}
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item
+                    name="description"
+                    label="Product Description"
+                    rules={[
+                        {
+                            required: true,
+                        },
+                    ]}
+                >
+                    <Input.TextArea />
+                </Form.Item>
+                <Form.Item
+                    name="cost"
+                    label="Cost"
+                    rules={[
+                        {
+                            required: true,
+                        },
+                    ]}
+                >
+                    <InputNumber />
+                </Form.Item>
+                <Form.Item {...tailLayout}>
+                    <Button htmlType="submit" type="primary">
+                        Submit
+                    </Button> 
+                </Form.Item>
+            </Form>
+            <MNewClient visible={visible} onCancel={hideUserModal} useResetFormOnCloseModal={useResetFormOnCloseModal} />
         </div>
     );
 };
