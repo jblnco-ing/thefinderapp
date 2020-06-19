@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { Layout } from "antd";
 import { Form, Button } from "antd";
 import { withRouter } from "react-router";
-// import Errores from '../components/Errores'
 import { useAuth, useUser} from 'reactfire';
-import { Errors } from '../components/Errores';
-import { Footer } from '../components/Footer';
+import { Errors } from '../components/Errors/Errors';
+import { Footer } from '../components/Footer/Footer';
 
 const Login = ({ history }) => {
     console.log(useUser());

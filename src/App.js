@@ -6,7 +6,8 @@ import { FirebaseAppProvider } from 'reactfire';
 import Login from './views/Login';
 import Dashboard from './views/Dashboard';
 import Error from './views/Error';
-import { Loading } from './components/Loading';
+import { Loading } from './components/Loading/Loading';
+import { DatabaseProvider } from './contexts/DatabaseContext';
 
 function App() {
   return (
@@ -16,7 +17,9 @@ function App() {
           <Switch>
             <Route exact path="/Login" component={Login}/>
             <Route exact path="/">
-              <Dashboard /> 
+              <DatabaseProvider>
+                <Dashboard /> 
+              </DatabaseProvider>
             </Route>
             <Route path="*">
               <Error />
