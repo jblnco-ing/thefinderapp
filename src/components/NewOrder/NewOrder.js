@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Form, Input, InputNumber, Button, Select, Row, Col } from 'antd';
 import { MNewClient } from '../modals/MNewClient/MNewClient';
+import { DatabaseContext } from '../../contexts/DatabaseContext';
+import { useFirestoreCollection } from 'reactfire';
 
 const { Option } = Select;
 const layout = {
@@ -21,18 +23,25 @@ const tailLayout = {
 // reset form fields when modal is form, closed
 const useResetFormOnCloseModal = ({ form, visible }) => {
     const prevVisibleRef = useRef();
+    
     useEffect(() => {
         prevVisibleRef.current = visible;
     }, [visible]);
+    
     const prevVisible = prevVisibleRef.current;
+    
     useEffect(() => {
         if (!visible && prevVisible) {
             form.resetFields();
         }
-    }, [visible]);
+    });
 };
 
 export const NewOrder = () => {
+    const storeCollection = useFirestoreCollection;
+    const { store } = useContext(DatabaseContext);
+    const clientsColletion = store().collection('clients');
+    const [clients, setclients] = useState([]);
     const [visible, setVisible] = useState(false);
     const [client_id, setclient_id] = useState(0);
     const handleChange = value => {
@@ -51,18 +60,22 @@ export const NewOrder = () => {
         values.client_id=client_id;
         console.log('Finish:', values);
     };
-    
+
+    const getClients = () => {
+        const data = storeCollection(clientsColletion).docs.map((d) => ({ id: d.id, ...d.data() }));
+        return data;
+    }
     return (
         <div>
             <Form.Provider
                 onFormFinish={(name, { values, forms }) => {
                     if (name === 'newClientForm') {
                         console.log(values);
-                        
                         const { newOrderForm } = forms;
-                        const client = newOrderForm.getFieldValue('client') || [];
+                        const clients = getClients();
+                        // const clients = newOrderForm.getFieldValue('clients') || [];
                         newOrderForm.setFieldsValue({
-                            client: [...client, values],
+                            clients: [...clients, values],
                         });
                         setVisible(false);
                     }
@@ -80,18 +93,19 @@ export const NewOrder = () => {
                         <Col span={12}>
                         <Form.Item
                             noStyle
-                            shouldUpdate={(prevValues, curValues) => prevValues.client !== curValues.client}
+                            shouldUpdate={(prevValues, curValues) => prevValues.clients !== curValues.clients}
                             rules={[
                                 {
                                     required: true,
                                 },
                             ]}
                                 >
-                                {({ getFieldValue }) => {
-                                        const client = getFieldValue('client') || [];
-                                        const options = (client) => 
-                                            client.length ?
-                                                client.map((user, index) => <Option key={index} value={index}>{user.name}</Option>)
+                                    {({ getFieldValue }) => {
+                                        console.log(getFieldValue);
+                                        const clients = getFieldValue('clients') || [];
+                                        const options = (clients) => 
+                                            clients.length ?
+                                                clients.map((client, index) => <Option key={index} value={index}>{client.name}</Option>)
                                                 : (<Option value="0">No Client</Option>)
                                         ;
                                         // console.log(options(client));
@@ -100,7 +114,7 @@ export const NewOrder = () => {
                                         <Select
                                             onChange={handleChange}
                                         >
-                                            {options(client)}
+                                            {options(clients)}
                                         </Select>
                                     );
                                 }}
