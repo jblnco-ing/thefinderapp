@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { Form, Input, InputNumber, Button, Select, Row, Col } from 'antd';
+import { Form, Input, InputNumber, Button, Select, Row, Col, DatePicker } from 'antd';
 import { MNewClient } from '../modals/MNewClient/MNewClient';
 import { DatabaseContext } from '../../contexts/DatabaseContext';
 import { useFirestoreCollection } from 'reactfire';
-
+import moment from 'moment';
 const { Option } = Select;
 const layout = {
     labelCol: {
@@ -37,39 +37,65 @@ const useResetFormOnCloseModal = ({ form, visible }) => {
     });
 };
 
+
 export const NewOrder = () => {
     const storeCollection = useFirestoreCollection;
     const { store } = useContext(DatabaseContext);
-    const clientsColletion = store().collection('clients');
+    const clientsRef = store().collection('clients');
+    const clientsCollection = storeCollection(clientsRef);
+    const clients = clientsCollection.docs.map(
+        (d) => ({ id: d.id, ...d.data() })
+    );
     const [visible, setVisible] = useState(false);
-    const [client_id, setclient_id] = useState(0);
-    const handleChange = value => {
-        setclient_id(value);
-    }
-    
-    const showUserModal = () => {
-        setVisible(true);
-    };
-    
-    const hideUserModal = () => {
-        setVisible(false);
-    };
+    const [client, setclient] = useState(0);
 
-    const onFinish = values => {
-        values.client_id=client_id;
-        console.log('Finish:', values);
+    const saveOrder = (data,doc_id) =>
+        clientsRef.doc(doc_id)
+        .collection('orders').doc()
+            .set(data)
+            .then((res) => {
+                console.log(res);
+            },
+            (error) => {
+                console.error(error);
+            }
+            );
+            
+            const showUserModal = () => {
+                setVisible(true);
+            };
+            
+            const hideUserModal = () => {
+                setVisible(false);
+            };
+            
+            const handleChange = value => {
+                const client = clients.find(item => (item.id === value));
+                setclient(client);
+            }
+            
+            const onFinish = values => {
+                values.date = values.date.format('L');
+                const date = moment().format('L');
+                const data = {
+                    ...values,
+                    client: `${client.name} ${client.lastname}`,
+                    createdAt: date,
+                    updatedAt: date
+                }
+        console.log(data);
+        saveOrder(data, client.id);
     };
 
     const options = (clients) =>
         clients.length ?
-            clients.map((client, index) => <Option key={index} value={index}>{client.name}</Option>)
+            clients.map((client, index) =>
+                <Option key={index} value={client.id}>
+                    {client.name} {client.lastname}
+                </Option>)
             : (<Option value="0">No Client</Option>)
         ;
 
-    const getClients = () => {
-        const data = storeCollection(clientsColletion).docs.map((d) => ({ id: d.id, ...d.data() }));
-        return data;
-    }
     return (
         <div>
             <Form
@@ -84,10 +110,7 @@ export const NewOrder = () => {
                     <Col span={12}>
                     <Form.Item
                         noStyle
-                                shouldUpdate={(prevValues, curValues) => {
-                                    console.log(prevValues);
-                                    return prevValues.clients !== curValues.clients
-                                }}
+                        shouldUpdate={(prevValues, curValues) => prevValues.clients !== curValues.clients}
                         rules={[
                             {
                                 required: true,
@@ -97,7 +120,7 @@ export const NewOrder = () => {
                             <Select
                                 onChange={handleChange}
                             >
-                                {options(getClients())}
+                                {options(clients)}
                             </Select>
                         </Form.Item>
                         </Col>
@@ -113,6 +136,9 @@ export const NewOrder = () => {
                             </Button>
                         </Col>
                     </Row>
+                </Form.Item>
+                <Form.Item label="Date" name="date" initialValue={moment()} >
+                    <DatePicker />
                 </Form.Item>
                 <Form.Item
                     name="name"

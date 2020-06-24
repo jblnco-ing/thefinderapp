@@ -5,7 +5,7 @@ import { Header } from "../components/Header/Header";
 import { withRouter } from "react-router-dom/cjs/react-router-dom.min";
 import { Footer } from "../components/Footer/Footer";
 import { NewOrder } from "../components/NewOrder/NewOrder";
-import { LIstOrdersRow } from "../components/ListOrdersRow/LIstOrdersRow";
+import { TableOrders } from "../components/TableOrders/TableOrders";
 
 const Dashboard = ({ history }) => {
 	const [page, setpage] = useState(1);
@@ -20,11 +20,11 @@ const Dashboard = ({ history }) => {
 	const SelectPage = ({page}) => {
 		switch (page) {
 			case 1:
-				return <NewOrder />;
-			case 2:
-				return <LIstOrdersRow/>;
-			default:
-				return <LIstOrdersRow />;
+				return <TableOrders />;
+				case 2:
+					return <NewOrder />;
+					default:
+				return <TableOrders />;
 		}
 	};
 

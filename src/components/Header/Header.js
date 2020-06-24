@@ -9,10 +9,10 @@ export const Header = ({ title, subTitle, onClick }) => {
 	};
 
 	const groupBtns = [
-		<Button onClick={() => onClick(2)} key="list" type="primary">
+		<Button onClick={() => onClick(1)} key="list" type="primary">
 			List Orders
 				</Button>,
-		<Button onClick={() => onClick(1)} key="new" type="primary">
+		<Button onClick={() => onClick(2)} key="new" type="primary">
 			New Order
 				</Button>,
 		<Button onClick={logout} key="logout" type="primary">

@@ -34,6 +34,7 @@ export const MNewClient = ({ visible, onCancel, useResetFormOnCloseModal }) => {
                 }
             );
             console.log(newClient);
+            onCancel();
         }
     }
 
