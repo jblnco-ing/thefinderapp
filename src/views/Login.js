@@ -7,7 +7,7 @@ import { Errors } from '../components/Errors/Errors';
 import { Footer } from '../components/Footer/Footer';
 
 const Login = ({ history }) => {
-    console.log(useUser());
+    // console.log(useUser());
     const user = useUser();
     const auth = useAuth();
     const googleAuthProvider = new useAuth.GoogleAuthProvider();
@@ -17,7 +17,7 @@ const Login = ({ history }) => {
     useEffect(() => {
            
         if (user) {
-            console.log(user);
+            // console.log(user);
             
             history.push("/");
         }
@@ -28,7 +28,7 @@ const Login = ({ history }) => {
         await auth
             .signInWithPopup(provider)
             .then(result => {
-                console.log(result);
+                // console.log(result);
             })
             .catch(error => {
                 seterror(error.message)

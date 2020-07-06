@@ -5,7 +5,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 export const Loading = () => {
 	const { Content } = Layout;
 
-	const antIcon = <LoadingOutlined style={{ fontSize: 100, color:"blue" }} spin />;
+	const antIcon = <LoadingOutlined style={{ fontSize: 100, color:"@primary-color" }} spin />;
 	return (
         <Layout style={{ height: "100vh" }}>
 			<Content

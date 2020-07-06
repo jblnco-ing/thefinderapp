@@ -11,7 +11,7 @@ const Dashboard = ({ history }) => {
 	const [page, setpage] = useState(1);
 	
 	const handleClick = (page) => {
-		console.log(page);	
+		// console.log(page);	
 		setpage(page);
 	};
 	const { Content } = Layout;

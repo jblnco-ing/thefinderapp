@@ -1,5 +1,6 @@
-import React, { useContext } from 'react'
-import { Form, Modal, Input, Select } from 'antd';
+import React, { useContext, useState } from 'react'
+import { Form, Modal, Input, Select, Spin } from 'antd';
+import { LoadingOutlined } from "@ant-design/icons";
 import { DatabaseContext } from '../../../contexts/DatabaseContext';
 
 export const MNewClient = ({ visible, onCancel, useResetFormOnCloseModal }) => {
@@ -7,36 +8,37 @@ export const MNewClient = ({ visible, onCancel, useResetFormOnCloseModal }) => {
     const { store } = useContext(DatabaseContext);
     const clientsCollection = store().collection("clients"); 
     const [form] = Form.useForm();
-        
+    const [loading, setloading] = useState(false);        
     useResetFormOnCloseModal({
         form,
         visible,
     });
 
     const onFinish = async (values) => {
+        setloading(true);
         if (values) {
             const date = new Date();
             const data = {
                 name: values.name.toUpperCase(),
-                lastname: values.lastname.toUpperCase(),
+                description: values.description.toUpperCase(),
                 phone: `(+${values.prefix}) ${values.phone}`,
                 createdAt: date.toLocaleString(),
                 updatedAt: date.toLocaleString()
             };
-            console.log(data);
-            const newClient = await clientsCollection.doc()
+            // console.log(data);
+            await clientsCollection.doc()
                 .set(data)
                 .then((res) => {
-                    console.log(res);
-                },
-                (error) => {
-                    console.error(error);
+                        // console.log(res);
+                    },
+                    (error) => {
+                            console.error(error);
+                        }
+                    );
+                    setloading(false);
+                    onCancel();
                 }
-            );
-            console.log(newClient);
-            onCancel();
-        }
-    }
+            }
 
     const onOk = () => {
         form.submit();
@@ -49,51 +51,50 @@ export const MNewClient = ({ visible, onCancel, useResetFormOnCloseModal }) => {
             </Select>
         </Form.Item>
     );
+    const antIcon = <LoadingOutlined style={{ color: "@primary-color" }} spin />;
     return (
         <Modal title="New Client" visible={visible} onOk={onOk} onCancel={onCancel}>
-            <Form
-                form={form}
-                layout="vertical"
-                name="newClientForm"
-                initialValues={{
-                    prefix: '58',
-                }}
-                onFinish={onFinish}
-            >
-                <Form.Item
-                    name="name"
-                    label="Client Name"
-                    rules={[
-                        {
-                            required: true,
-                        },
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    name="lastname"
-                    label="Client Lastname"
-                    rules={[
-                        {
-                            required: true,
-                        },
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    name="phone"
-                    label="Client Phone"
-                    rules={[
-                        {
-                            required: true,
-                        },
-                    ]}
-                >
-                    <Input addonBefore={prefixSelector} />
-                </Form.Item>
-            </Form>
+            <Spin spinning={loading} size="large" indicator={antIcon}>
+                <Form
+                    form={form}
+                    layout="vertical"
+                    name="newClientForm"
+                    initialValues={{
+                        prefix: '58',
+                    }}
+                    onFinish={onFinish}
+                    >
+                    <Form.Item
+                        name="name"
+                        label="Client Name"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+                        >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        name="description"
+                        label="Client description"
+                        initialValue=""
+                        >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        name="phone"
+                        label="Client Phone"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+                        >
+                        <Input addonBefore={prefixSelector} />
+                    </Form.Item>
+                </Form>
+            </Spin>
         </Modal>
     );
 }

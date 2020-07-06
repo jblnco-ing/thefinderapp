@@ -11,17 +11,18 @@ export const TableOrders = () => {
     const getOrders = () => {
         const data = storeCollection(ordersColletion).docs
             .map((d) => {
-                console.log(d);
-                
+                // console.log(d);
                 return ({
                     key: d.id,
                     ...d.data()
                 })
             });
-        console.log(data);
+        // console.log(data);
         return data;
     }
+    const getTotalCost = (orders) => (orders) ? orders.map((order) => order.cost).reduce((a, b) => a + b):0;
     const orders = getOrders();
+    const totalCost = getTotalCost(orders);
     const columns = [
         {
             title: 'Client',
@@ -52,12 +53,6 @@ export const TableOrders = () => {
     return (
         <div>
             <Table columns={columns} dataSource={orders} summary={pageData => {
-                    let totalCost = 0;
-
-                    pageData.forEach(({ cost }) => {
-                        totalCost += cost;
-                    });
-
                     return (
                         <>
                             <Table.Summary.Row>

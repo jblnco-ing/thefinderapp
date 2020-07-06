@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import './App.css';
+import './App.less';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import firebaseConfig from './firebaseConfig';
 import { FirebaseAppProvider } from 'reactfire';
