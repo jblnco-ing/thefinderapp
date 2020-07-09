@@ -50,8 +50,8 @@ const useResetFormOnCloseModal = ({ form, visible }) => {
 export const NewOrder = () => {
 	const storeCollection = useFirestoreCollection;
 	const { store } = useContext(DatabaseContext);
-	const clientsRef = store().collection("clients").orderBy('name');
-	const clientsCollection = storeCollection(clientsRef);
+	const clientsRef = store().collection("clients");
+	const clientsCollection = storeCollection(clientsRef.orderBy('name'));
 	const clients = clientsCollection.docs.map((d) => ({
 		id: d.id,
 		...d.data(),
@@ -95,7 +95,7 @@ export const NewOrder = () => {
 
 	const onFinish = (values) => {
 		values.date = values.date.format("L");
-		const date = moment().format("L");
+		const date = moment().format("L").toString();
 		const data = {
 			...values,
 			client: `${client.name} ${client.description}`,
