@@ -2,22 +2,17 @@ import React from "react";
 import { PageHeader, Button } from "antd";
 import { useFirebaseApp } from "reactfire";
 
-export const Header = ({ title, subTitle, onClick }) => {
+export const Header = ({ title, subTitle }) => {
 	const app = useFirebaseApp();
+
 	const logout = () => {
 		app.auth().signOut();
 	};
 
 	const groupBtns = [
-		<Button onClick={() => onClick(1)} key="list" type="primary">
-			List Orders
-				</Button>,
-		<Button onClick={() => onClick(2)} key="new" type="primary">
-			New Order
-				</Button>,
 		<Button onClick={logout} key="logout" type="primary">
 			Logout
-				</Button>,
+		</Button>,
 	];
 
 	return (

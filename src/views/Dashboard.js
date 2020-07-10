@@ -4,42 +4,45 @@ import { useUser } from "reactfire";
 import { Header } from "../components/Header/Header";
 import { withRouter } from "react-router-dom/cjs/react-router-dom.min";
 import { Footer } from "../components/Footer/Footer";
-import { NewOrder } from "../components/NewOrder/NewOrder";
-import { TableOrders } from "../components/TableOrders/TableOrders";
+import { MainMenu } from "../components/MainMenu/MainMenu";
+import pages from "../const/pages";
 
 const Dashboard = ({ history }) => {
-	const [page, setpage] = useState(1);
-	
-	const handleClick = (page) => {
-		// console.log(page);	
-		setpage(page);
-	};
-	const { Content } = Layout;
+	const [key, setKey] = useState("table_orders");
+	const { Content, Sider } = Layout;
 	const user = useUser();
 
-	const SelectPage = ({page}) => {
-		switch (page) {
-			case 1:
-				return <TableOrders />;
-				case 2:
-					return <NewOrder />;
-					default:
-				return <TableOrders />;
+	const handleClick = (key) => {
+		setKey(key);
+	};
+
+	const SelectPage = ({ keyPage }) => {
+		const page = pages.find((page) => page.key === keyPage);
+		if (page) {
+			return <page.Component />;
 		}
+		return <div></div>;
 	};
 
 	useEffect(() => {
 		if (user === null) {
 			history.push("/Login");
-        }
+		}
 	}, [history, user]);
 	return (
 		<Layout style={{ height: "100vh" }}>
-			<Header title="The Finder App" subTitle="Admin" onClick={handleClick} />
-			<Content style={{ padding: "0 50px", marginTop: 40 }}>
-				<SelectPage page={page}/>
-			</Content>
-			<Footer/>
+			<Header title="The Finder App" subTitle="Admin" />
+			<Layout>
+				<Sider>
+					<MainMenu handleClick={handleClick} />
+				</Sider>
+				<Layout>
+					<Content style={{ padding: "0 50px", marginTop: 40 }}>
+						<SelectPage keyPage={key} />
+					</Content>
+				</Layout>
+			</Layout>
+			<Footer />
 		</Layout>
 	);
 };

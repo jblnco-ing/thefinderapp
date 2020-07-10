@@ -80,7 +80,7 @@ export const NewOrder = () => {
 			);
 	};
 
-	const showUserModal = () => {
+	const showClientModal = () => {
 		setVisible(true);
 	};
 
@@ -116,6 +116,7 @@ export const NewOrder = () => {
 		) : (
 			<Option value="0">No Client</Option>
 		);
+
 	return (
 		<div>
 			<Form {...layout} name="newOrderForm" onFinish={onFinish}>
@@ -144,7 +145,7 @@ export const NewOrder = () => {
 								style={{
 									margin: "0 8px",
 								}}
-								onClick={showUserModal}
+								onClick={showClientModal}
 							>
 								Add Client
 							</Button>
