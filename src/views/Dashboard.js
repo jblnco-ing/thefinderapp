@@ -20,7 +20,7 @@ const Dashboard = ({ history }) => {
 	const SelectPage = ({ keyPage }) => {
 		const page = menuItems.find((page) => page.key === keyPage);
 		if (page) {
-			console.log(page);
+			// console.log(page);
 			return <page.Component />;
 		}
 		return <div> No Page </div>;

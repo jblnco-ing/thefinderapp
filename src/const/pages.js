@@ -1,5 +1,5 @@
-import { NewOrder } from "../components/NewOrder/NewOrder";
-import { TableOrders } from "../components/TableOrders/TableOrders";
+import { NewOrder } from "../components/Orders/NewOrder/NewOrder";
+import { TableOrders } from "../components/Orders/TableOrders/TableOrders";
 
 const pages = [
 	{

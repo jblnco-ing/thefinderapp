@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { DatabaseContext } from "../../contexts/DatabaseContext";
+import { DatabaseContext } from "../../../contexts/DatabaseContext";
 import { useFirestoreCollection } from "reactfire";
 import { Table } from "antd";
 import Text from "antd/lib/typography/Text";

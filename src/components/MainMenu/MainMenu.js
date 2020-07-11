@@ -8,7 +8,7 @@ export const MainMenu = ({ handleClick }) => {
 	const submenusLevel_0 = menuItems.map((item) => item.key);
 
 	const onOpenChange = (keys) => {
-		console.log(keys);
+		// console.log(keys);
 		const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
 		if (submenusLevel_0.indexOf(latestOpenKey) === -1) {
 			setOpenKeys(keys);
@@ -17,7 +17,7 @@ export const MainMenu = ({ handleClick }) => {
 		}
 	};
 	const selectItem = ({ key }) => {
-		console.log(key);
+		// console.log(key);
 		handleClick(key);
 	};
 

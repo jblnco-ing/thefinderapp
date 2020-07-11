@@ -10,8 +10,8 @@ import {
 	DatePicker,
 	message,
 } from "antd";
-import { MNewClient } from "../modals/MNewClient/MNewClient";
-import { DatabaseContext } from "../../contexts/DatabaseContext";
+import { MNewClient } from "../../modals/MNewClient/MNewClient";
+import { DatabaseContext } from "../../../contexts/DatabaseContext";
 import { useFirestoreCollection } from "reactfire";
 import moment from "moment";
 const { Option } = Select;
