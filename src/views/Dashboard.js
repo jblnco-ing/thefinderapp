@@ -5,7 +5,7 @@ import { Header } from "../components/Header/Header";
 import { withRouter } from "react-router-dom/cjs/react-router-dom.min";
 import { Footer } from "../components/Footer/Footer";
 import { MainMenu } from "../components/MainMenu/MainMenu";
-import pages from "../const/pages";
+import { menuItems } from "../const/pages";
 
 const Dashboard = ({ history }) => {
 	const [key, setKey] = useState("table_orders");
@@ -13,15 +13,17 @@ const Dashboard = ({ history }) => {
 	const user = useUser();
 
 	const handleClick = (key) => {
+		// console.log(key);
 		setKey(key);
 	};
 
 	const SelectPage = ({ keyPage }) => {
-		const page = pages.find((page) => page.key === keyPage);
+		const page = menuItems.find((page) => page.key === keyPage);
 		if (page) {
+			console.log(page);
 			return <page.Component />;
 		}
-		return <div></div>;
+		return <div> No Page </div>;
 	};
 
 	useEffect(() => {

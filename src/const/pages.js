@@ -3,13 +3,25 @@ import { TableOrders } from "../components/TableOrders/TableOrders";
 
 const pages = [
 	{
-		key: "new_order",
-		Component: NewOrder,
-	},
-	{
-		key: "table_orders",
-		Component: TableOrders,
+		key: "orders",
+		title: "Orders",
+		menuItems: [
+			{
+				key: "new_order",
+				Component: NewOrder,
+				text: "New Order",
+			},
+			{
+				key: "table_orders",
+				Component: TableOrders,
+				text: "Table Order",
+			},
+		],
 	},
 ];
 
-export default pages;
+const menuItems = pages.length
+	? pages.map((object) => object["menuItems"]).reduce((a, b) => a.concat(b))
+	: [];
+
+export { pages, menuItems };

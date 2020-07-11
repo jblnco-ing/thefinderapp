@@ -10,7 +10,9 @@ export const TableOrders = () => {
 	const ordersColletion = store().collectionGroup("orders");
 
 	const getTotalCost = (data) =>
-		data ? data.map((order) => order.cost).reduce((a, b) => a + b) : 0;
+		data.length
+			? data.map((order) => order.cost).reduce((a, b) => a + b)
+			: 0;
 
 	const getOrders = () => {
 		const data = storeCollection(ordersColletion).docs.map((d) => {

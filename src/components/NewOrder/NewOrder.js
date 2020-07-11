@@ -51,7 +51,7 @@ export const NewOrder = () => {
 	const storeCollection = useFirestoreCollection;
 	const { store } = useContext(DatabaseContext);
 	const clientsRef = store().collection("clients");
-	const clientsCollection = storeCollection(clientsRef.orderBy('name'));
+	const clientsCollection = storeCollection(clientsRef.orderBy("name"));
 	const clients = clientsCollection.docs.map((d) => ({
 		id: d.id,
 		...d.data(),
@@ -60,9 +60,7 @@ export const NewOrder = () => {
 	const [client, setclient] = useState(0);
 
 	const saveOrder = (data, doc_id) => {
-		
-		message
-			.loading('Action in progress..');
+		message.loading("Action in progress..");
 		clientsRef
 			.doc(doc_id)
 			.collection("orders")
@@ -70,12 +68,12 @@ export const NewOrder = () => {
 			.set(data)
 			.then(
 				(res) => {
-					message.success('Loading finished', 2.5);
+					message.success("Loading finished", 2.5);
 					// console.log(res);
 				},
 				(error) => {
 					console.error(error);
-					message.error('Oh Oh', 2.5);
+					message.error("Oh Oh", 2.5);
 				}
 			);
 	};
