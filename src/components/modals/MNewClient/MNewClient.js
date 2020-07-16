@@ -77,7 +77,7 @@ export const MNewClient = ({ visible, onCancel, useResetFormOnCloseModal }) => {
                     </Form.Item>
                     <Form.Item
                         name="description"
-                        label="Client description"
+                        label="Client Description"
                         initialValue=""
                         >
                         <Input />

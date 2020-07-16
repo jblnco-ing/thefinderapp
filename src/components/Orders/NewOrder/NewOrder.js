@@ -9,11 +9,13 @@ import {
 	Col,
 	DatePicker,
 	message,
+	
 } from "antd";
 import { MNewClient } from "../../modals/MNewClient/MNewClient";
 import { DatabaseContext } from "../../../contexts/DatabaseContext";
 import { useFirestoreCollection } from "reactfire";
 import moment from "moment";
+import { MNewState } from "../../modals/MNewState/MNewState";
 const { Option } = Select;
 const layout = {
 	labelCol: {
@@ -82,7 +84,7 @@ export const NewOrder = () => {
 		setVisible(true);
 	};
 
-	const hideUserModal = () => {
+	const hideClientModal = () => {
 		setVisible(false);
 	};
 
@@ -192,9 +194,14 @@ export const NewOrder = () => {
 					</Button>
 				</Form.Item>
 			</Form>
-			<MNewClient
+			{/* <MNewClient
 				visible={visible}
-				onCancel={hideUserModal}
+				onCancel={hideClientModal}
+				useResetFormOnCloseModal={useResetFormOnCloseModal}
+			/> */}
+			<MNewState
+				visible={visible}
+				onCancel={hideClientModal}
 				useResetFormOnCloseModal={useResetFormOnCloseModal}
 			/>
 		</div>

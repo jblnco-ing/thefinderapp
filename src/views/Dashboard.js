@@ -8,7 +8,7 @@ import { MainMenu } from "../components/MainMenu/MainMenu";
 import { menuItems } from "../const/pages";
 
 const Dashboard = ({ history }) => {
-	const [key, setKey] = useState("table_orders");
+	const [key, setKey] = useState("new_order");
 	const { Content, Sider } = Layout;
 	const user = useUser();
 
