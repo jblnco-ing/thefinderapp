@@ -8,7 +8,7 @@ import { MainMenu } from "../components/MainMenu/MainMenu";
 import { menuItems } from "../const/pages";
 
 const Dashboard = ({ history }) => {
-	const [key, setKey] = useState("new_order");
+	const [key, setKey] = useState("table_orders");
 	const { Content, Sider } = Layout;
 	const user = useUser();
 
@@ -35,7 +35,7 @@ const Dashboard = ({ history }) => {
 		<Layout style={{ height: "100vh" }}>
 			<Header title="The Finder App" subTitle="Admin" />
 			<Layout>
-				<Sider>
+				<Sider >
 					<MainMenu handleClick={handleClick} />
 				</Sider>
 				<Layout>

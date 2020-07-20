@@ -1,6 +1,10 @@
 .color-picker-palette{
     position: absolute;
     z-index: 100;
+    padding: 5px;
+    border: 2px solid #FB9902;
+    border-radius: 5%;
+    background-color: #ffffff;
 }
 .color-picker-cover{
     position: fixed;

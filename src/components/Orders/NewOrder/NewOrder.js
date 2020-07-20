@@ -53,14 +53,22 @@ export const NewOrder = () => {
 	const storeCollection = useFirestoreCollection;
 	const { store } = useContext(DatabaseContext);
 	const clientsRef = store().collection("clients");
+	const statesRef = store().collection("states");
 	const clientsCollection = storeCollection(clientsRef.orderBy("name"));
+	const statesCollection = storeCollection(statesRef.orderBy("name"));
 	const clients = clientsCollection.docs.map((d) => ({
 		id: d.id,
 		...d.data(),
 	}));
-	const [visible, setVisible] = useState(false);
-	const [client, setclient] = useState(0);
-
+	const states = statesCollection.docs.map((d) => ({
+		id: d.id,
+		...d.data(),
+	}));
+	const [visibleClient, setVisibleClient] = useState(false);
+	const [visibleState, setVisibleState] = useState(false);
+	// const [client, setclient] = useState(0);
+	let client = {};
+	let state = {};
 	const saveOrder = (data, doc_id) => {
 		message.loading("Action in progress..");
 		clientsRef
@@ -80,25 +88,29 @@ export const NewOrder = () => {
 			);
 	};
 
-	const showClientModal = () => {
-		setVisible(true);
+	const showModal = (callback) => {
+		callback(true);
 	};
 
-	const hideClientModal = () => {
-		setVisible(false);
+	const hideModal = (callback) => {
+		callback(false);
 	};
 
-	const handleChange = (value) => {
-		const client = clients.find((item) => item.id === value);
-		setclient(client);
+	const handleChange = (value, items) => {
+		return items.find((item) => item.id === value);
 	};
 
 	const onFinish = (values) => {
 		values.date = values.date.format("L");
+		const { name="", color="" } = state;
 		const date = moment().format("L").toString();
 		const data = {
 			...values,
-			client: `${client.name} ${client.description}`,
+			client: client ? `${client.name} ${client.description}`:"",
+			state: {
+				name,
+				color
+			},
 			createdAt: date,
 			updatedAt: date,
 		};
@@ -106,7 +118,7 @@ export const NewOrder = () => {
 		saveOrder(data, client.id);
 	};
 
-	const options = (clients) =>
+	const optionsClient = (clients) =>
 		clients.length ? (
 			clients.map((client, index) => (
 				<Option key={index} value={client.id}>
@@ -116,11 +128,23 @@ export const NewOrder = () => {
 		) : (
 			<Option value="0">No Client</Option>
 		);
+	const optionsState = (states) =>
+		states.length ? (
+			states.map((state, index) => (
+				<Option key={index} value={state.id} style={{color: state.color}} >
+					{state.name}
+				</Option>
+			))
+		) : (
+			<Option value="0">No State</Option>
+		);
 
 	return (
 		<div>
 			<Form {...layout} name="newOrderForm" onFinish={onFinish}>
-				<Form.Item label="Client">
+				<Form.Item
+					label="Client"
+				>
 					<Row>
 						<Col span={16}>
 							<Form.Item
@@ -128,14 +152,11 @@ export const NewOrder = () => {
 								shouldUpdate={(prevValues, curValues) =>
 									prevValues.clients !== curValues.clients
 								}
-								rules={[
-									{
-										required: true,
-									},
-								]}
 							>
-								<Select onChange={handleChange}>
-									{options(clients)}
+								<Select
+									onChange={(id) => { client = handleChange(id, clients) }}
+									>
+									{optionsClient(clients)}
 								</Select>
 							</Form.Item>
 						</Col>
@@ -145,9 +166,38 @@ export const NewOrder = () => {
 								style={{
 									margin: "0 8px",
 								}}
-								onClick={showClientModal}
-							>
+								onClick={() => { showModal(setVisibleClient) }}
+								>
 								Add Client
+							</Button>
+						</Col>
+					</Row>
+				</Form.Item>
+				<Form.Item label="State">
+					<Row>
+						<Col span={16}>
+							<Form.Item
+								noStyle
+								shouldUpdate={(prevValues, curValues) =>
+									prevValues.states !== curValues.states
+								}
+								>
+								<Select
+									onChange={(id) => { state = handleChange(id, states) }}
+								>
+									{optionsState(states)}
+								</Select>
+							</Form.Item>
+						</Col>
+						<Col>
+							<Button
+								htmlType="button"
+								style={{
+									margin: "0 8px",
+								}}
+								onClick={() => { showModal(setVisibleState) }}
+							>
+								Add State
 							</Button>
 						</Col>
 					</Row>
@@ -194,14 +244,14 @@ export const NewOrder = () => {
 					</Button>
 				</Form.Item>
 			</Form>
-			{/* <MNewClient
-				visible={visible}
-				onCancel={hideClientModal}
+			<MNewClient
+				visible={visibleClient}
+				onCancel={() => { hideModal(setVisibleClient) }}
 				useResetFormOnCloseModal={useResetFormOnCloseModal}
-			/> */}
+			/>
 			<MNewState
-				visible={visible}
-				onCancel={hideClientModal}
+				visible={visibleState}
+				onCancel={() => { hideModal(setVisibleState) }}
 				useResetFormOnCloseModal={useResetFormOnCloseModal}
 			/>
 		</div>

@@ -1,13 +1,14 @@
 import React, { useContext, useState } from "react";
 import { DatabaseContext } from "../../../contexts/DatabaseContext";
 import { useFirestoreCollection } from "reactfire";
-import { Table } from "antd";
+import { Table, Button, Tooltip } from "antd";
+import {EditOutlined} from '@ant-design/icons';
 import Text from "antd/lib/typography/Text";
 
 export const TableOrders = () => {
 	const storeCollection = useFirestoreCollection;
 	const { store } = useContext(DatabaseContext);
-	const ordersColletion = store().collectionGroup("orders");
+	const ordersColletion = store().collectionGroup("orders").orderBy('date',"desc");
 
 	const getTotalCost = (data) =>
 		data.length
@@ -43,16 +44,33 @@ export const TableOrders = () => {
 			title: "Description",
 			dataIndex: "description",
 			key: "description",
+			ellipsis: {
+				showTitle: false,
+			},
+			render: description => (
+				<Tooltip placement="topLeft" title={description}>
+					{description}
+				</Tooltip>
+			),
 		},
 		{
 			title: "Cost",
 			dataIndex: "cost",
 			key: "cost",
+			width: 80,
+		},
+		{
+			title: "State",
+			dataIndex: "state",
+			key: "state",
+			width: 120,
+			render: (state) => state ? <span style={{ color: state.color }}> {state.name} <Button type="primary" shape="circle" icon={<EditOutlined style={{ color: "white" }} />} size='small' /> </span> : <span > No state </span>
 		},
 		{
 			title: "Date",
 			dataIndex: "date",
 			key: "date",
+			width: 110,
 		},
 	];
 	return (

@@ -2,89 +2,51 @@ import React, { useContext, useState } from "react";
 import { Form, Modal, Input, Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { DatabaseContext } from "../../../contexts/DatabaseContext";
-import { ChromePicker } from "react-color";
-import "./MNewState.css";
-
-const ColorPicker = ({form}) => {
-	const defaultColor = "#999";
-	const [color, setColor] = useState({ r: 0, g: 9, b: 153, a: 1 });
-	const [changeColor, setChangeColor] = useState("#999");
-	const [displayPicker, setDisplayPicker] = useState(false);
-	const onHandleShowColorPicker = () => {
-        setDisplayPicker(true);
-	};
-	const onHandleCloseColorPicker = () => {
-        setDisplayPicker(false);
-    };
-	const onChangeColorPicker = (e) => {
-		console.log(e);
-		setColor(e.rgb);
-        setChangeColor(e.hex);
-        
-        form.setFieldsValue({
-            color: e.hex
-        });
-	};
-	return (
-		<>
-			<span
-				onClick={onHandleShowColorPicker}
-            >
-                ColorPicker
-            </span>
-			{displayPicker && (
-				<div className="color-picker-palette">
-					<div
-						className="color-picker-cover"
-						onClick={onHandleCloseColorPicker}
-                        />
-					<ChromePicker
-                        color={color}
-						onChange={onChangeColorPicker}
-                        />
-				</div>
-			)}
-		</>
-	);
-};
+import { ColorPicker } from "../../ColorPicker/ColorPicker";
 
 export const MNewState = ({ visible, onCancel, useResetFormOnCloseModal }) => {
 	const { store } = useContext(DatabaseContext);
 	const statesCollection = store().collection("states");
 	const [form] = Form.useForm();
+	const [displayPicker, setDisplayPicker] = useState(false);
 
 	const [loading, setloading] = useState(false);
 	useResetFormOnCloseModal({
 		form,
 		visible,
 	});
+
+	const onHandleShowColorPicker = () => {
+		setDisplayPicker(true);
+	};
+	const onHandleCloseColorPicker = () => {
+		setDisplayPicker(false);
+	};
     
 	const onFinish = async (values) => {
         // values.color = changeColor;
-		console.log(values);
-		// setloading(true);
-		// if (values) {
-		//     const date = new Date();
-		//     const data = {
-		//         name: values.name.toUpperCase(),
-		//         description: values.description.toUpperCase(),
-		//         phone: `(+${values.prefix}) ${values.phone}`,
-		//         createdAt: date.toLocaleString(),
-		//         updatedAt: date.toLocaleString()
-		//     };
-		//     // console.log(data);
-		//     await statesCollection.doc()
-		//         .set(data)
-		//         .then((res) => {
-		//                 // console.log(res);
-		//             },
-		//             (error) => {
-		//                     console.error(error);
-		//                 }
-		//             );
-		//             setloading(false);
-		//             onCancel();
-		//         }
+		// console.log(values);
+		setloading(true);
+		if (values) {
+		    const date = new Date();
+		    const data = {
+		        ...values,
+		        createdAt: date.toLocaleString(),
+		        updatedAt: date.toLocaleString()
+		    };
+		    // console.log(data);
+		    await statesCollection.doc()
+		        .set(data)
+		        .then(() => {
+		                // console.log(res);
+		            },
+		            (error) => {
+		                    console.error(error);
+		                }
+		            );
+		            setloading(false);
+		            onCancel();
+		        }
 	};
 
 	const onOk = () => {
@@ -113,7 +75,7 @@ export const MNewState = ({ visible, onCancel, useResetFormOnCloseModal }) => {
 						label="State Name"
 						rules={[
 							{
-								required: false,
+								required: true,
 							},
 						]}
 					>
@@ -124,21 +86,22 @@ export const MNewState = ({ visible, onCancel, useResetFormOnCloseModal }) => {
 						label="State Description"
 						// initialValue=""
 					>
-						<Input value={"hola"} />
+						<Input />
 					</Form.Item>
 					<Form.Item
 						name="color"
 						label="State Color"
+						className=""
                         rules={[
-                            {
-                                required: true,
+							{
+								required: true,
                             },
                         ]}
-                        initialValue=""
                     >
-                        <ColorPicker form={form}/>
+						<Input readOnly onClick={onHandleShowColorPicker} />
                     </Form.Item>
 				</Form>
+				<ColorPicker form={form} display={displayPicker} onHandleCloseColorPicker={onHandleCloseColorPicker}/>
 			</Spin>
 		</Modal>
 	);
