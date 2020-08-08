@@ -102,19 +102,15 @@ export const NewOrder = () => {
 
 	const onFinish = (values) => {
 		values.date = values.date.format("L");
-		const { name="", color="" } = state;
 		const date = moment().format("L").toString();
 		const data = {
 			...values,
 			client: client ? `${client.name} ${client.description}`:"",
-			state: {
-				name,
-				color
-			},
+			id_state: state.id,
 			createdAt: date,
 			updatedAt: date,
 		};
-		// console.log(data);
+		console.log(data);
 		saveOrder(data, client.id);
 	};
 
