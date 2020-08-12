@@ -54,6 +54,7 @@ export const NewOrder = () => {
 	const { store } = useContext(DatabaseContext);
 	const clientsRef = store().collection("clients");
 	const statesRef = store().collection("states");
+	const ordersRef = store().collection("orders");
 	const clientsCollection = storeCollection(clientsRef.orderBy("name"));
 	const statesCollection = storeCollection(statesRef.orderBy("name"));
 	const clients = clientsCollection.docs.map((d) => ({
@@ -69,11 +70,9 @@ export const NewOrder = () => {
 	// const [client, setclient] = useState(0);
 	let client = {};
 	let state = {};
-	const saveOrder = (data, doc_id) => {
+	const saveOrder = (data) => {
 		message.loading("Action in progress..");
-		clientsRef
-			.doc(doc_id)
-			.collection("orders")
+		ordersRef
 			.doc()
 			.set(data)
 			.then(
@@ -105,13 +104,13 @@ export const NewOrder = () => {
 		const date = moment().format("L").toString();
 		const data = {
 			...values,
-			client: client ? `${client.name} ${client.description}`:"",
+			id_client: client.id,
 			id_state: state.id,
 			createdAt: date,
 			updatedAt: date,
 		};
-		console.log(data);
-		saveOrder(data, client.id);
+		// console.log(data);
+		saveOrder(data);
 	};
 
 	const optionsClient = (clients) =>

@@ -1,11 +1,14 @@
 import React, { useState, useContext } from "react";
-import { Table, Input, Popconfirm, Form, Tooltip, Select, Button } from "antd";
+import {
+	Table, Input, Popconfirm, Form, Tooltip, Select
+	// , Button
+} from "antd";
 import { DatabaseContext } from "../../../contexts/DatabaseContext";
 import { useFirestoreCollection } from "reactfire";
 import Text from "antd/lib/typography/Text";
-import { EditOutlined } from "@ant-design/icons";
+// import { EditOutlined } from "@ant-design/icons";
 
-const SelectState = ({ states, handleChange}) => {
+const SelectState = ({ states, handleChange }) => {
 	const { Option } = Select;
 	const optionsState = (states) =>
 		states.length ? (
@@ -19,8 +22,8 @@ const SelectState = ({ states, handleChange}) => {
 				</Option>
 			))
 		) : (
-			<Option value="0">No State</Option>
-		);
+				<Option value="0">No State</Option>
+			);
 	return (
 		<Select
 			// value={Select}
@@ -45,9 +48,7 @@ const EditableCell = ({
 	handleChange,
 	...restProps
 }) => {
-	// console.log(states);
-	// const inputNode = inputType === "select" ? <div /> : <Input />;
-	const inputNode = inputType === "select" ? <SelectState states={states} handleChange={handleChange}/> : <Input />;
+	const inputNode = inputType === "select" ? <SelectState states={states} handleChange={handleChange} /> : <Input />;
 	return (
 		<td {...restProps}>
 			{editing ? (
@@ -66,21 +67,28 @@ const EditableCell = ({
 					{inputNode}
 				</Form.Item>
 			) : (
-				children
-			)}
+					children
+				)}
 		</td>
 	);
 };
 
+
+
 export const TableOrders = () => {
-const { store } = useContext(DatabaseContext);
-const storeCollection = useFirestoreCollection;
+	const { store } = useContext(DatabaseContext);
+	const storeCollection = useFirestoreCollection;
 	const ordersColletion = store()
-		.collectionGroup("orders")
-		.orderBy("date", "desc");
+		.collection("orders");
 	const statesRef = store().collection("states");
+	const clientsRef = store().collection("clients");
 	const statesCollection = storeCollection(statesRef.orderBy("name"));
+	const clientsCollection = storeCollection(clientsRef.orderBy("name"));
 	const states = statesCollection.docs.map((d) => ({
+		id: d.id,
+		...d.data(),
+	}));
+	const clients = clientsCollection.docs.map((d) => ({
 		id: d.id,
 		...d.data(),
 	}));
@@ -91,13 +99,15 @@ const storeCollection = useFirestoreCollection;
 			: 0;
 
 	const getOrders = () => {
-		const orders = storeCollection(ordersColletion).docs.map((d) => {
+		const orders = storeCollection(ordersColletion.orderBy("date", "desc")).docs.map((d) => {
 			const state = states.find(({ id }) => id === d.data().id_state);
-			const { id, name, color } = state ? state : { id:"", name:"", color:"" };
+			const client = clients.find(({ id }) => id === d.data().id_client);
+			const { id, name, color } = state ? state : { id: "", name: "", color: "" };
 			return {
 				key: d.id,
 				...d.data(),
-				state: {id, name, color}
+				client: `${client.name} ${client.description}`,
+				state: { id, name, color }
 			};
 		});
 		return orders;
@@ -110,12 +120,12 @@ const storeCollection = useFirestoreCollection;
 	const [totalCost] = useState(getTotalCost(data));
 
 	const handleChange = (id_state) => {
-		console.log('handleChange');
-		console.log(id_state);
+		// console.log('handleChange');
+		// console.log(id_state);
 		const { id, name, color } = states.find(({ id }) => id === id_state);
 		setStateOrder({ id, name, color });
-		console.log(stateOrder);
-	 }; 
+		// console.log(stateOrder);
+	};
 
 	const isEditing = (record) => record.key === editingKey;
 
@@ -130,15 +140,17 @@ const storeCollection = useFirestoreCollection;
 		setEditingKey("");
 	};
 
+	const updateStateOrder = (key, id_state) => {
+		ordersColletion.doc(key).update({
+			id_state
+		});
+	 };
+
 	const save = async (key) => {
 		try {
 			const row = await form.validateFields();
 			row.state = stateOrder;
 			row.id_state = stateOrder.id;
-			console.log('row');
-			console.log(row);
-			console.log('data');
-			console.log(data);
 			const newData = [...data];
 			const index = newData.findIndex((item) => key === item.key);
 
@@ -147,6 +159,7 @@ const storeCollection = useFirestoreCollection;
 				newData.splice(index, 1, { ...item, ...row });
 				setData(newData);
 				setEditingKey("");
+				updateStateOrder(key, row.id_state);
 			} else {
 				newData.push(row);
 				setData(newData);
@@ -196,20 +209,31 @@ const storeCollection = useFirestoreCollection;
 			key: "state",
 			width: 120,
 			editable: true,
-			render: (state) =>
-				state ? (
+			render: (state, record) =>
+				state.name ? (
 					<span style={{ color: state.color }}>
 						{state.name}
-						<Button
+						{/* <Button
+							disabled={editingKey !== ""}
+							onClick={() => edit(record)}
 							type="primary"
 							shape="circle"
 							size="small"
 							icon={<EditOutlined style={{ color: "white" }} />}
-						/>
+						/> */}
 					</span>
 				) : (
-					<span> No state </span>
-				),
+						<span> No state 
+							{/* <Button
+								disabled={editingKey !== ""}
+								onClick={() => edit(record)}
+								type="primary"
+								shape="circle"
+								size="small"
+								icon={<EditOutlined style={{ color: "white" }} />}
+							/> */}
+						</span>
+					),
 		},
 		{
 			title: "operation",
@@ -232,18 +256,18 @@ const storeCollection = useFirestoreCollection;
 						</Popconfirm>
 					</span>
 				) : (
-					<a
-						href="//#"
-						disabled={editingKey !== ""}
-						onClick={() => edit(record)}
-					>
-						Edit
-					</a>
-				);
+						<a
+							href="//#"
+							disabled={editingKey !== ""}
+							onClick={() => edit(record)}
+						>
+							Edit
+						</a>
+					);
 			},
 		},
 	];
-	
+
 	const mergedColumns = columns.map((col) => {
 		if (!col.editable) {
 			return col;
